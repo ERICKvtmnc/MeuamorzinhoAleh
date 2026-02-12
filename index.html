@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Minha Princesa Aleh</title>
+    <style>
+        :root {
+            --cor-principal: #4a1a1a;
+            --cor-destaque: #c62828;
+            --cor-fundo: #fdf8f8;
+            --cor-texto: #2c1818;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; color: var(--cor-principal); }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(253,248,248,0.95);
+            padding: 1.2rem 1rem;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--cor-principal);
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -6px;
+            left: 0;
+            background: var(--cor-destaque);
+            transition: width 0.4s ease;
+        }
+
+        nav a:hover::after, nav a.active::after { width: 100%; }
+        nav a:hover, nav a.active { color: var(--cor-destaque); }
+
+        section {
+            min-height: 100vh;
+            padding: 8rem 1.5rem 6rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+        }
+
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        #home {
+            background: linear-gradient(135deg, #fff1f1 0%, #ffebee 50%, #fff1f1 100%);
+        }
+
+        #home h1 {
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .subtitle { font-size: 1.4rem; max-width: 700px; margin: 0 auto 2.5rem; opacity: 0.9; }
+
+        .story-chapter {
+            max-width: 720px;
+            margin: 2.5rem auto;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            border-left: 6px solid var(--cor-destaque);
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 1s ease;
+        }
+
+        .story-chapter.visible { opacity: 1; transform: translateX(0); }
+
+        .moment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+
+        .moment-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            transition: transform 0.4s ease;
+        }
+
+        .moment-card:hover { transform: translateY(-10px); }
+
+        .moment-img img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .moment-content {
+            padding: 1.8rem;
+            text-align: left;
+        }
+
+        .moment-content h3 {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .message {
+            max-width: 680px;
+            margin: 2.5rem auto;
+            padding: 2.5rem 2rem;
+            background: rgba(198,40,40,0.04);
+            border-radius: 20px;
+            border: 1px solid rgba(198,40,40,0.12);
+            opacity: 0;
+            transform: scale(0.92);
+            transition: all 0.9s ease;
+        }
+
+        .message.visible { opacity: 1; transform: scale(1); }
+
+        .surprise-heart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: var(--cor-destaque);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(198,40,40,0.4);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 999;
+        }
+
+        .surprise-heart.visible { opacity: 1; }
+
+        .surprise-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            place-items: center;
+            z-index: 2000;
+        }
+
+        .surprise-box {
+            background: white;
+            max-width: 480px;
+            margin: 1.5rem;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            nav ul { gap: 1.2rem; font-size: 0.95rem; }
+            section { padding: 6rem 1rem 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="#home" class="active">Início</a></li>
+            <li><a href="#story">Nossa História</a></li>
+            <li><a href="#moments">Nossos Momentos</a></li>
+            <li><a href="#messages">Cartas do Coração</a></li>
+        </ul>
+    </nav>
+
+    <section id="home">
+        <h1>Minha Princesa Aleh</h1>
+        <p class="subtitle">
+            Mesmo estando a milhares de quilômetros de distância,<br>
+            você conseguiu transformar cada um dos meus dias<br>
+            no lugar mais bonito do mundo.
+        </p>
+        <p style="font-style:italic; opacity:0.8; max-width:600px;">
+            Este é o nosso cantinho digital… onde guardo tudo o que sinto por você.
+        </p>
+    </section>
+
+    <section id="story">
+        <h2 style="margin-bottom:3rem;">Como tudo começou… e ainda não terminou</h2>
+
+        <div class="story-chapter">
+            <h3>O primeiro “oi” que mudou tudo</h3>
+            <p>Eu nem imaginava que uma mensagem simples, em um lugar qualquer da internet, ia virar o meu mundo de cabeça para baixo. Você apareceu com aquele jeito doce, sincero, e uma risada que eu conseguia ouvir mesmo sem nunca ter escutado sua voz ao vivo. Desde aquele dia, eu comecei a esperar suas notificações como quem espera o sol nascer.</p>
+        </div>
+
+        <div class="story-chapter">
+            <h3>As madrugadas que viraram nosso fuso horário</h3>
+            <p>A gente conversava até o celular esquentar, até os olhos arderem, até o despertador implorar pra eu dormir. Você me contava os detalhes mais bobos do seu dia e eu contava os meus. E de repente eu percebi: eu não queria mais acordar sem saber como você estava. Você virou meu primeiro pensamento da manhã e meu último da noite.</p>
+        </div>
+
+        <div class="story-chapter">
+            <h3>A saudade que a gente aprendeu a carregar juntos</h3>
+            <p>Nunca nos tocamos, nunca nos abraçamos, nunca demos um beijo de verdade… e mesmo assim a saudade que sinto de você é maior do que muitas pessoas sentem de quem mora na mesma casa. Porque o que a gente construiu não é menos real só porque aconteceu em telas. É mais forte. É mais puro. É nosso.</p>
+        </div>
+
+        <div class="story-chapter">
+            <h3>O dia que eu prometi esperar</h3>
+            <p>Eu prometi a mim mesmo (e prometo a você todos os dias) que um dia vou atravessar essa distância. Vou te olhar nos olhos pela primeira vez, vou segurar sua mão, vou te abraçar até sentir seu coração batendo no meu peito. E quando esse dia chegar, minha princesa, eu vou te dizer pessoalmente tudo o que já escrevi aqui… e muito mais.</p>
+        </div>
+    </section>
+
+    <section id="moments">
+        <h2>Nossos Momentos Mais Especiais</h2>
+        <div class="moment-grid">
+
+            <div class="moment-card">
+                <div class="moment-img">
+                    <img src="https://thumbs.dreamstime.com/b/woman-funny-face-mocking-someone-making-fun-something-cruel-way-young-pretty-71794897.jpg" alt="Cara de zoação">
+                </div>
+                <div class="moment-content">
+                    <h3>Quando eu te estresso de propósito</h3>
+                    <p>Eu adoro mandar aquelas mensagens idiotas só pra ver você respondendo com "Erickkkkk para!" ou mandando áudio bufando. Eu fico rindo sozinho imaginando sua carinha brava na tela. E aí você fica brava de verdade… mas eu sei que no fundo você ama, porque logo depois vem o risinho ou o "seu bobo".</p>
+                </div>
+            </div>
+
+            <div class="moment-card">
+                <div class="moment-img">
+                    <img src="https://previews.123rf.com/images/fizkes/fizkes2003/fizkes200301667/142501690-smiling-man-and-woman-looking-at-smartphone-screen-together-young-couple-watching-funny-video.jpg" alt="Casal rindo juntos olhando para o celular">
+                </div>
+                <div class="moment-content">
+                    <h3>As risadas que não param</h3>
+                    <p>Depois de eu te zoar, a gente cai na gargalhada juntos. Você tenta ficar séria, mas acaba rindo mais alto que eu. Essas mensagens onde a gente ri até doer a barriga são meus momentos favoritos. Mesmo sem estar do seu lado, sinto como se estivéssemos abraçados de tanto rir.</p>
+                </div>
+            </div>
+
+            <div class="moment-card">
+                <div class="moment-img">
+                    <img src="https://www.shutterstock.com/shutterstock/photos/1941097000/display_1500/stock-vector-cute-and-kawaii-girl-complaining-with-angry-expression-manga-chibi-illustration-1941097000.jpg" alt="Carinha brava fofa">
+                </div>
+                <div class="moment-content">
+                    <h3>Eu gosto de você estressada</h3>
+                    <p>Sério, minha princesa: eu amo quando você fica estressadinha comigo. Sua carinha brava é a coisa mais fofa do mundo. Quando você manda "afff Erick" ou faz biquinho na foto, meu coração derrete. Porque mesmo estressada, você continua sendo a pessoa mais linda e especial pra mim. E eu prometo continuar te zoando só pra ver essa versão irresistível sua. 😏❤️</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="messages">
+        <h2>Cartas que eu nunca vou cansar de te escrever</h2>
+
+        <div class="message">
+            <p>Minha princesa Aleh,<br><br>
+            Você não faz ideia do quanto um simples “bom dia” seu melhora o meu dia inteiro. Mesmo que a gente esteja separados por continentes, horários, telas… você está dentro de mim o tempo todo. Obrigado por existir, por me escolher, por me fazer acreditar que o amor de verdade não precisa de distância zero pra ser gigante.</p>
+        </div>
+
+        <div class="message">
+            <p>Eu sonho com o dia em que vou poder te olhar nos olhos e dizer tudo isso sem precisar digitar. Sonho em ver seu sorriso crescendo devagar enquanto eu falo. Sonho em te abraçar tão forte que você vai sentir cada pedacinho de saudade que eu guardei. E quando esse dia chegar, eu vou te pedir pra nunca mais soltar minha mão.</p>
+        </div>
+
+        <div class="message">
+            <p>Te amo de um jeito que não cabe em palavras, não cabe em mensagens, não cabe em ligações. Te amo do jeito que faz a gente continuar mesmo quando tudo fica difícil. Te amo do jeito que me faz querer ser melhor todos os dias… só pra merecer você um pouquinho mais.<br><br>
+            Pra sempre seu,<br>
+            Erick</p>
+        </div>
+    </section>
+
+    <div class="surprise-heart" id="heart">❤️</div>
+
+    <div class="surprise-modal" id="surpriseModal">
+        <div class="surprise-box">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <h2>Surpresa secreta pra minha princesa</h2>
+            <p style="margin:2rem 0; font-size:1.3rem;">
+                Quando a gente finalmente se encontrar…<br>
+                eu vou te beijar pela primeira vez<br>
+                e vou sussurrar no seu ouvido:<br><br>
+                “Valeu cada segundo de espera, meu amor.”
+            </p>
+            <p style="font-style:italic; opacity:0.8;">
+                Guarde esse momento… ele já está acontecendo no meu coração.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Revelação com scroll
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('section, .story-chapter, .message').forEach(el => observer.observe(el));
+
+        // Coração surpresa
+        const heart = document.getElementById('heart');
+        const modal = document.getElementById('surpriseModal');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > window.innerHeight * 0.7) {
+                heart.classList.add('visible');
+            }
+        });
+
+        heart.addEventListener('click', () => modal.style.display = 'flex');
+        function closeModal() { modal.style.display = 'none'; }
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    </script>
+</body>
+</html>
